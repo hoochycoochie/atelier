@@ -2,6 +2,8 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import compression from 'compression';
+import helmet from 'helmet';
 import { AllExceptionFilter } from 'infrastructure/common/filter/exception.filter';
 import { LoggingInterceptor } from 'infrastructure/common/interceptors/logger.interceptor';
 import {
@@ -15,6 +17,9 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(helmet());
+
+  app.use(compression());
   const configService = app.get(ConfigService);
   // Filter
   app.useGlobalFilters(new AllExceptionFilter(new LoggerService()));

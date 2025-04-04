@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PlayserJsonRepositoryService } from './playser-json-repository/playser-json-repository.service';
+import { PlayerJsonRepositoryService } from './playser-json-repository/playser-json-repository.service';
 
 @Module({
-  providers: [PlayserJsonRepositoryService],
-  exports: [PlayserJsonRepositoryService],
+  providers: [PlayerJsonRepositoryService],
+  exports: [PlayerJsonRepositoryService],
 })
 export class JsonfileModule {}

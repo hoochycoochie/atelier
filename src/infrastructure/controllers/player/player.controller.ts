@@ -11,8 +11,8 @@ import { FindPlayersDto } from './dto/find-player-list.dto';
 import { PlayerDto } from './dto/player.dto';
 import { StaticticDto } from './dto/statistic.dto';
 
-@Controller('player')
-@ApiTags('player')
+@Controller('players')
+@ApiTags('players')
 @ApiResponse({ status: 500, description: 'Internal error' })
 export class PlayerController {
   constructor(

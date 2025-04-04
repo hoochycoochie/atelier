@@ -10,7 +10,7 @@ import { PlayerStatsUseCase } from 'core/use-cases/player-stats.usecase';
 import { ExceptionsService } from 'infrastructure/exceptions/exceptions.service';
 
 import { JsonfileModule } from 'infrastructure/jsonfile/jsonfile.module';
-import { PlayserJsonRepositoryService } from 'infrastructure/jsonfile/playser-json-repository/playser-json-repository.service';
+import { PlayerJsonRepositoryService } from 'infrastructure/jsonfile/playser-json-repository/playser-json-repository.service';
 import { UseCaseProxy } from './usecases-proxy';
 
 @Module({
@@ -29,14 +29,14 @@ export class UsecasesProxyModule {
           provide: UsecasesProxyModule.PLAYER_FIND_BY_ID_PROXY,
           inject: [
             LoggerService,
-            PlayserJsonRepositoryService,
+            PlayerJsonRepositoryService,
             ExceptionsService,
           ],
 
           useFactory: (
             logger: LoggerService,
 
-            repository: PlayserJsonRepositoryService,
+            repository: PlayerJsonRepositoryService,
             exception: ExceptionsService,
           ) =>
             new UseCaseProxy(
@@ -48,14 +48,14 @@ export class UsecasesProxyModule {
           provide: UsecasesProxyModule.PLAYER_LIST_PROXY,
           inject: [
             LoggerService,
-            PlayserJsonRepositoryService,
+            PlayerJsonRepositoryService,
             ExceptionsService,
           ],
 
           useFactory: (
             logger: LoggerService,
 
-            repository: PlayserJsonRepositoryService,
+            repository: PlayerJsonRepositoryService,
             exception: ExceptionsService,
           ) =>
             new UseCaseProxy(
@@ -67,14 +67,83 @@ export class UsecasesProxyModule {
           provide: UsecasesProxyModule.PLAYER_STATS_PROXY,
           inject: [
             LoggerService,
-            PlayserJsonRepositoryService,
+            PlayerJsonRepositoryService,
             ExceptionsService,
           ],
 
           useFactory: (
             logger: LoggerService,
 
-            repository: PlayserJsonRepositoryService,
+            repository: PlayerJsonRepositoryService,
+            exception: ExceptionsService,
+          ) =>
+            new UseCaseProxy(
+              new PlayerStatsUseCase(repository, logger, exception),
+            ),
+        },
+      ],
+      exports: [
+        UsecasesProxyModule.PLAYER_FIND_BY_ID_PROXY,
+        UsecasesProxyModule.PLAYER_LIST_PROXY,
+        UsecasesProxyModule.PLAYER_STATS_PROXY,
+      ],
+    };
+  }
+
+  static registerForTest(): DynamicModule {
+    return {
+      module: UsecasesProxyModule,
+      providers: [
+        {
+          provide: UsecasesProxyModule.PLAYER_FIND_BY_ID_PROXY,
+          inject: [
+            LoggerService,
+            PlayerJsonRepositoryService,
+            ExceptionsService,
+          ],
+
+          useFactory: (
+            logger: LoggerService,
+
+            repository: PlayerJsonRepositoryService,
+            exception: ExceptionsService,
+          ) =>
+            new UseCaseProxy(
+              new PlayerFindByIdUseCase(repository, logger, exception),
+            ),
+        },
+
+        {
+          provide: UsecasesProxyModule.PLAYER_LIST_PROXY,
+          inject: [
+            LoggerService,
+            PlayerJsonRepositoryService,
+            ExceptionsService,
+          ],
+
+          useFactory: (
+            logger: LoggerService,
+
+            repository: PlayerJsonRepositoryService,
+            exception: ExceptionsService,
+          ) =>
+            new UseCaseProxy(
+              new PlayerListUseCase(repository, logger, exception),
+            ),
+        },
+
+        {
+          provide: UsecasesProxyModule.PLAYER_STATS_PROXY,
+          inject: [
+            LoggerService,
+            PlayerJsonRepositoryService,
+            ExceptionsService,
+          ],
+
+          useFactory: (
+            logger: LoggerService,
+
+            repository: PlayerJsonRepositoryService,
             exception: ExceptionsService,
           ) =>
             new UseCaseProxy(

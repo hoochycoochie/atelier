@@ -1,10 +1,10 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PlayerEntity } from 'core/entities/player.entity';
-import { PlayserJsonRepositoryService } from './playser-json-repository.service';
+import { PlayerJsonRepositoryService } from './playser-json-repository.service';
 
-describe('PlayserJsonRepositoryService', () => {
-  let service: PlayserJsonRepositoryService;
+describe('PlayerJsonRepositoryService', () => {
+  let service: PlayerJsonRepositoryService;
   const players: PlayerEntity[] = [
     {
       id: 52,
@@ -109,11 +109,11 @@ describe('PlayserJsonRepositoryService', () => {
   ];
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PlayserJsonRepositoryService],
+      providers: [PlayerJsonRepositoryService],
     }).compile();
 
-    service = module.get<PlayserJsonRepositoryService>(
-      PlayserJsonRepositoryService,
+    service = module.get<PlayerJsonRepositoryService>(
+      PlayerJsonRepositoryService,
     );
   });
 

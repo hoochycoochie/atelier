@@ -9,9 +9,11 @@ import {
   StatisticEntity,
 } from 'core/repositories';
 import { CountryStatistic } from '../types';
+/* The `PlayerJsonRepositoryService` class in TypeScript implements methods to manage player data,
+including finding players by rank, retrieving player statistics, and calculating BMI and win ratios. */
 
 @Injectable()
-export class PlayserJsonRepositoryService implements IPlayerRepository {
+export class PlayerJsonRepositoryService implements IPlayerRepository {
   players: PlayerEntity[] = [];
   constructor() {
     this.players = [
@@ -117,11 +119,22 @@ export class PlayserJsonRepositoryService implements IPlayerRepository {
       },
     ];
   }
-  find({ limit }: PaginationParams): Promise<PlayerEntity[]> {
+  /**
+   * The function `find` sorts a list of players by rank and returns a subset based on a specified
+   * limit.
+   * @param {PaginationParams}  - The `find` method takes a `limit` parameter of type
+   * `PaginationParams`, which is an object with a `limit` property specifying the maximum number of
+   * items to return. The method sorts the `players` array based on the `rank` property of each player's
+   * data. If the `
+   * @returns The `find` method returns a Promise that resolves to an array of `PlayerEntity` objects.
+   * If the specified `limit` is greater than the total number of players, it returns all players sorted
+   * by rank. Otherwise, it returns a subset of players based on the specified `limit`.
+   */
+  async find({ limit }: PaginationParams): Promise<PlayerEntity[]> {
     try {
-      const players = this.players.sort((p1, p2) => {
-        return p1.data.rank - p2.data.rank;
-      });
+      const players = this.players.sort(
+        (p1, p2) => p1.data.rank - p2.data.rank,
+      );
       if (limit > this.players.length) return Promise.resolve(players);
       return Promise.resolve(players.slice(0, limit));
     } catch (error) {
@@ -129,7 +142,13 @@ export class PlayserJsonRepositoryService implements IPlayerRepository {
     }
   }
 
-  findOne(id: number): Promise<PlayerEntity> {
+  /**
+   * This TypeScript function finds a player entity by its ID and returns a Promise with the result.
+   * @param {number} id - The `id` parameter is a number representing the unique identifier of the
+   * player entity that you want to find in the `players` array.
+   * @returns The `findOne` method is returning a Promise that resolves to a `PlayerEntity` object.
+   */
+  async findOne(id: number): Promise<PlayerEntity> {
     try {
       const index = this.players.findIndex((p) => p?.id === id);
       if (index < 0)
@@ -140,6 +159,13 @@ export class PlayserJsonRepositoryService implements IPlayerRepository {
       throw error;
     }
   }
+  /**
+   * The `statistics` function in TypeScript asynchronously computes and returns statistics related to
+   * player data, including median player height, mean body mass index, and the country with the most win
+   * ratio.
+   * @returns The `statistics()` method returns a Promise that resolves to a `StatisticEntity` object
+   * containing statistical information such as country, mean body mass index, and median player height.
+   */
   async statistics(): Promise<StatisticEntity> {
     try {
       const players = this.players;
@@ -148,11 +174,16 @@ export class PlayserJsonRepositoryService implements IPlayerRepository {
         meanBodyMassIndex: 0,
         medianPlayerHeight: 0,
       };
-      stats.medianPlayerHeight = await this.computeMedianPlayerHeight(
-        players.map((p) => p.data.height),
-      );
-      stats.meanBodyMassIndex = await this.computeMeanBodyMassIndex(players);
-      stats.country = await this.computeCountryMostWinRatio(players);
+
+      const [medianPlayerHeight, meanBodyMassIndex, country] =
+        await Promise.all([
+          this.computeMedianPlayerHeight(players.map((p) => p.data.height)),
+          this.computeMeanBodyMassIndex(players),
+          this.computeCountryMostWinRatio(players),
+        ]);
+      stats.medianPlayerHeight = medianPlayerHeight;
+      stats.meanBodyMassIndex = meanBodyMassIndex;
+      stats.country = country;
 
       return Promise.resolve(stats);
     } catch (error) {
@@ -160,6 +191,16 @@ export class PlayserJsonRepositoryService implements IPlayerRepository {
     }
   }
 
+  /**
+   * This TypeScript function calculates the mean Body Mass Index (BMI) of a group of players based on
+   * their weight and height data.
+   * @param {PlayerEntity[]} players - The `computeMeanBodyMassIndex` function calculates the mean Body
+   * Mass Index (BMI) of a list of players. The function takes an array of `PlayerEntity` objects as
+   * input, where each `PlayerEntity` object contains data about the player's weight and height.
+   * @returns The `computeMeanBodyMassIndex` function is returning a Promise that resolves to a number,
+   * which represents the mean Body Mass Index (BMI) calculated from the weight and height data of the
+   * players provided in the `players` array.
+   */
   async computeMeanBodyMassIndex(players: PlayerEntity[]): Promise<number> {
     try {
       if (!players || !players.length || players.length === 0)
@@ -183,6 +224,24 @@ export class PlayserJsonRepositoryService implements IPlayerRepository {
       throw error;
     }
   }
+  /**
+   * The function `computeCountryMostWinRatio` calculates the country with the highest win ratio based on
+   * player data.
+   * @param {PlayerEntity[]} players - An array of PlayerEntity objects. Each PlayerEntity object
+   * represents a player and contains information such as country code, match history, and other relevant
+   * data. The goal of the `computeCountryMostWinRatio` function is to calculate the win ratio for each
+   * country based on the match history of the players and
+   * @returns The `computeCountryMostWinRatio` function is returning a Promise that resolves to the
+   * country with the highest win ratio among the players provided in the input array.
+   */
+  /**
+   * This function computes the country with the highest win ratio based on player data.
+   * @param {PlayerEntity[]} players - The `computeCountryMostWinRatio` function takes an array of
+   * `PlayerEntity` objects as input. Each `PlayerEntity` object represents a player and contains
+   * information such as their country code and match results.
+   * @returns The `computeCountryMostWinRatio` function returns a Promise that resolves to the country
+   * with the highest win ratio among the players provided in the input array.
+   */
 
   async computeCountryMostWinRatio(players: PlayerEntity[]): Promise<string> {
     try {
@@ -208,14 +267,10 @@ export class PlayserJsonRepositoryService implements IPlayerRepository {
           country
         ] as Array<PlayerEntity>) {
           const last = player?.data?.last;
-          if (last) {
+          if (last && last.length > 0) {
             last.forEach((match) => {
-              if (match === 1) {
-                totalWin++;
-              }
-              if (match === 0) {
-                totalLost++;
-              }
+              if (match === 1) totalWin++;
+              if (match === 0) totalLost++;
             });
           }
         }
@@ -234,7 +289,16 @@ export class PlayserJsonRepositoryService implements IPlayerRepository {
     }
   }
 
-  computeMedianPlayerHeight(heights: number[]): Promise<number> {
+  /**
+   * The function `computeMedianPlayerHeight` calculates the median height from an array of player
+   * heights in TypeScript asynchronously.
+   * @param {number[]} heights - The `computeMedianPlayerHeight` function you provided calculates the
+   * median height from an array of player heights. The function takes an array of numbers representing
+   * player heights as input.
+   * @returns The `computeMedianPlayerHeight` function returns a Promise that resolves to the median
+   * height of the players in the `heights` array.
+   */
+  async computeMedianPlayerHeight(heights: number[]): Promise<number> {
     try {
       if (!heights || !heights.length || heights.length === 0)
         throw new Error('heights empty');
