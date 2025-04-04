@@ -15,3 +15,8 @@ export interface PlayerEntity {
     last: number[];
   };
 }
+
+export type PlayerEntityWithRatioWin = Pick<
+  PlayerEntity,
+  'country' | 'data' | 'id'
+> & { ratioWin?: number };

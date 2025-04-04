@@ -9,12 +9,12 @@ import { PlayerListUseCase } from 'core/use-cases/player-list.usecase';
 import { PlayerStatsUseCase } from 'core/use-cases/player-stats.usecase';
 import { ExceptionsService } from 'infrastructure/exceptions/exceptions.service';
 
-import { MongodbModule } from 'infrastructure/mongodb/mongodb.module';
-import { PlayerMongodbRepositoryService } from 'infrastructure/mongodb/player-mongodb-repository/player-mongodb-repository.service';
+import { JsonfileModule } from 'infrastructure/jsonfile/jsonfile.module';
+import { PlayserJsonRepositoryService } from 'infrastructure/jsonfile/playser-json-repository/playser-json-repository.service';
 import { UseCaseProxy } from './usecases-proxy';
 
 @Module({
-  imports: [LoggerModule, MongodbModule, ExceptionsModule],
+  imports: [LoggerModule, JsonfileModule, ExceptionsModule],
 })
 export class UsecasesProxyModule {
   static PLAYER_FIND_BY_ID_PROXY = 'playerFindByIdUseCase';
@@ -29,14 +29,14 @@ export class UsecasesProxyModule {
           provide: UsecasesProxyModule.PLAYER_FIND_BY_ID_PROXY,
           inject: [
             LoggerService,
-            PlayerMongodbRepositoryService,
+            PlayserJsonRepositoryService,
             ExceptionsService,
           ],
 
           useFactory: (
             logger: LoggerService,
 
-            repository: PlayerMongodbRepositoryService,
+            repository: PlayserJsonRepositoryService,
             exception: ExceptionsService,
           ) =>
             new UseCaseProxy(
@@ -48,14 +48,14 @@ export class UsecasesProxyModule {
           provide: UsecasesProxyModule.PLAYER_LIST_PROXY,
           inject: [
             LoggerService,
-            PlayerMongodbRepositoryService,
+            PlayserJsonRepositoryService,
             ExceptionsService,
           ],
 
           useFactory: (
             logger: LoggerService,
 
-            repository: PlayerMongodbRepositoryService,
+            repository: PlayserJsonRepositoryService,
             exception: ExceptionsService,
           ) =>
             new UseCaseProxy(
@@ -67,14 +67,14 @@ export class UsecasesProxyModule {
           provide: UsecasesProxyModule.PLAYER_STATS_PROXY,
           inject: [
             LoggerService,
-            PlayerMongodbRepositoryService,
+            PlayserJsonRepositoryService,
             ExceptionsService,
           ],
 
           useFactory: (
             logger: LoggerService,
 
-            repository: PlayerMongodbRepositoryService,
+            repository: PlayserJsonRepositoryService,
             exception: ExceptionsService,
           ) =>
             new UseCaseProxy(

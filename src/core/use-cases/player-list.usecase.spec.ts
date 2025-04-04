@@ -79,13 +79,15 @@ describe('PlayerFindByIdUseCase', () => {
         throw new Error();
       });
 
-      await expect(playerListUseCase.execute()).rejects.toThrow();
+      await expect(playerListUseCase.execute({ limit: 10 })).rejects.toThrow();
     });
 
     it('should return list of players found', async () => {
       (repository.find as jest.Mock).mockResolvedValue(players);
 
-      await expect(playerListUseCase.execute()).resolves.toBeDefined();
+      await expect(
+        playerListUseCase.execute({ limit: 10 }),
+      ).resolves.toBeDefined();
     });
   });
 });

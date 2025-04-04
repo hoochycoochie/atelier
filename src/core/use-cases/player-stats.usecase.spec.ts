@@ -43,7 +43,7 @@ describe('PlayerStatsUseCase', () => {
       const statisticEntity: StatisticEntity = {
         country: 'France',
         meanBodyMassIndex: 200,
-        medianSize: 180,
+        medianPlayerHeight: 180,
       };
 
       (repository.statistics as jest.Mock).mockResolvedValue(statisticEntity);

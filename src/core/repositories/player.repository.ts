@@ -3,10 +3,17 @@ import { PlayerEntity } from 'core/entities/player.entity';
 export interface StatisticEntity {
   country: string;
   meanBodyMassIndex: number;
-  medianSize: number;
+  medianPlayerHeight: number;
 }
+
+export type Pagination<T> = {
+  data: T[];
+};
+export type PaginationParams = {
+  limit?: number;
+};
 export interface IPlayerRepository {
-  find(): Promise<PlayerEntity[]>;
+  find(arg: PaginationParams): Promise<PlayerEntity[]>;
   findOne(id: number): Promise<PlayerEntity>;
   statistics(): Promise<StatisticEntity>;
 }

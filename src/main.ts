@@ -8,6 +8,8 @@ import {
   ResponseFormat,
   ResponseInterceptor,
 } from 'infrastructure/common/interceptors/response.interceptor';
+import { PlayerDto } from 'infrastructure/controllers/player/dto/player.dto';
+import { StaticticDto } from 'infrastructure/controllers/player/dto/statistic.dto';
 import { LoggerService } from 'infrastructure/logger/logger.service';
 import { AppModule } from './app.module';
 
@@ -18,7 +20,11 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionFilter(new LoggerService()));
 
   // pipes
-  app.useGlobalPipes(new ValidationPipe());
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    disableErrorMessages: configService.get('NODE_ENV') === 'production',
+  });
 
   // interceptors
   app.useGlobalInterceptors(new LoggingInterceptor(new LoggerService()));
@@ -38,7 +44,7 @@ async function bootstrap() {
     .setVersion('1')
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [ResponseFormat],
+    extraModels: [ResponseFormat, PlayerDto, StaticticDto],
     deepScanRoutes: true,
   });
   SwaggerModule.setup('api', app, document);

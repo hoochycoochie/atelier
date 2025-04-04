@@ -14,7 +14,6 @@ export class PlayerFindByIdUseCase {
     try {
       this.logger.log(undefined, `trying to find player with id = ${id}`);
       const player = await this.repository.findOne(id);
-      //  if (!player || !player?.id) {
       if (!player || !player?.id) {
         this.logger.error(undefined, `player with id = ${id} not found `);
         throw new Error(`player with id = ${id} is not found`);
@@ -23,6 +22,10 @@ export class PlayerFindByIdUseCase {
       this.logger.log(undefined, `player with id = ${id} found successfully`);
       return player;
     } catch (error) {
+      this.logger.error(
+        undefined,
+        `error trying to find player with id = ${id} error = ${error.message}`,
+      );
       throw error;
     }
   }
