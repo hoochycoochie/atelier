@@ -179,7 +179,7 @@ export class PlayerJsonRepositoryService implements IPlayerRepository {
         await Promise.all([
           this.computeMedianPlayerHeight(players.map((p) => p.data.height)),
           this.computeMeanBodyMassIndex(players),
-          this.computeCountryMostWinRatio(players),
+          this.computeMostWinRatioByCountry(players),
         ]);
       stats.medianPlayerHeight = medianPlayerHeight;
       stats.meanBodyMassIndex = meanBodyMassIndex;
@@ -208,12 +208,12 @@ export class PlayerJsonRepositoryService implements IPlayerRepository {
       const results: number[] = [];
       players.forEach(async (player) => {
         try {
-          let bodyMeanIndex = 0;
+          let bodyMeanIndexByPlayer = 0;
           const weight = player?.data?.weight;
           const height = player?.data?.height;
           if (weight > 0 && height > 0)
-            bodyMeanIndex = weight / Math.pow(height, 2);
-          results.push(bodyMeanIndex);
+            bodyMeanIndexByPlayer = weight / Math.pow(height, 2);
+          results.push(bodyMeanIndexByPlayer);
         } catch (error) {
           throw error;
         }
@@ -224,26 +224,16 @@ export class PlayerJsonRepositoryService implements IPlayerRepository {
       throw error;
     }
   }
+
   /**
-   * The function `computeCountryMostWinRatio` calculates the country with the highest win ratio based on
-   * player data.
-   * @param {PlayerEntity[]} players - An array of PlayerEntity objects. Each PlayerEntity object
-   * represents a player and contains information such as country code, match history, and other relevant
-   * data. The goal of the `computeCountryMostWinRatio` function is to calculate the win ratio for each
-   * country based on the match history of the players and
-   * @returns The `computeCountryMostWinRatio` function is returning a Promise that resolves to the
-   * country with the highest win ratio among the players provided in the input array.
-   */
-  /**
-   * This function computes the country with the highest win ratio based on player data.
-   * @param {PlayerEntity[]} players - The `computeCountryMostWinRatio` function takes an array of
+   * This TypeScript function computes the country with the highest win ratio based on player data.
+   * @param {PlayerEntity[]} players - The `computeMostWinRatioByCountry` function takes an array of
    * `PlayerEntity` objects as input. Each `PlayerEntity` object represents a player and contains
-   * information such as their country code and match results.
-   * @returns The `computeCountryMostWinRatio` function returns a Promise that resolves to the country
+   * information such as their country code and match data.
+   * @returns The `computeMostWinRatioByCountry` function returns a Promise that resolves to the country
    * with the highest win ratio among the players provided in the input array.
    */
-
-  async computeCountryMostWinRatio(players: PlayerEntity[]): Promise<string> {
+  async computeMostWinRatioByCountry(players: PlayerEntity[]): Promise<string> {
     try {
       if (!players || !players.length) throw new Error('players empty');
       const playerEntityWithRatioWins: PlayerEntityWithRatioWin[] = players;
