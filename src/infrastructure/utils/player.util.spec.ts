@@ -1,10 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { PlayerEntity } from 'core/entities/player.entity';
-import { PlayerJsonRepositoryService } from './playser-json-repository.service';
+import { PlayerUtils } from './player.util';
 
-describe('PlayerJsonRepositoryService', () => {
-  let service: PlayerJsonRepositoryService;
+describe('PlayerUtils', () => {
   const players: PlayerEntity[] = [
     {
       id: 52,
@@ -107,49 +104,23 @@ describe('PlayerJsonRepositoryService', () => {
       },
     },
   ];
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [PlayerJsonRepositoryService],
-    }).compile();
 
-    service = module.get<PlayerJsonRepositoryService>(
-      PlayerJsonRepositoryService,
-    );
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  describe('findOne player', () => {
-    it('should throw not found if player not found', async () => {
-      expect(async () => {
-        await service.findOne(12222222222222222);
-      }).rejects.toThrow(NotFoundException);
-    });
-
-    it('should found right user', async () => {
-      const firstPlayerId = players[0].id;
-      const player = await expect(service.findOne(firstPlayerId));
-      expect(player).toBeDefined();
+  describe('computeMedianPlayerHeight', () => {
+    it('should return right median', async () => {
+      const input = [185, 185, 185, 180, 178, 180];
+      const median = await PlayerUtils.computeMedianPlayerHeight(input);
+      expect(median).toEqual(182.5);
     });
   });
 
-  describe('find players', () => {
-    it('should return players order by rank asc', async () => {
-      const users = await service.find({ limit: 2 });
-      expect(users.length).toEqual(2);
-      expect(users[0].data.rank).toBeLessThanOrEqual(users[1].data.rank);
+  describe('computeMeanBodyMassIndex', () => {
+    it('should return computeMeanBodyMassIndex', async () => {
+      const median = await PlayerUtils.computeMeanBodyMassIndex(players);
+      expect(median).toEqual(2.3357838995505835);
     });
-  });
 
-  describe('statistics ,BodyMassIndex,WinRation,by country', () => {
-    it('should return players order by rank asc', async () => {
-      const { country, meanBodyMassIndex, medianPlayerHeight } =
-        await service.statistics();
-      expect(country).toBeDefined();
-      expect(meanBodyMassIndex).toBeDefined();
-      expect(medianPlayerHeight).toBeDefined();
+    it('should throw error if occurs', async () => {
+      await expect(PlayerUtils.computeMeanBodyMassIndex([])).rejects.toThrow();
     });
   });
 });

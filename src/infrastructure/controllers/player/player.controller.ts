@@ -25,16 +25,16 @@ export class PlayerController {
     @Inject(UsecasesProxyModule.PLAYER_STATS_PROXY)
     private readonly playerStatsUseCase: UseCaseProxy<PlayerStatsUseCase>,
   ) {}
-
-  @Post()
-  findAll(@Body() data: FindPlayersDto): Promise<PlayerDto[]> {
-    return this.playerListUseCase.getInstance().execute(data);
-  }
   @Get('statistics')
   @ApiResponseType(StaticticDto, false)
   getStatistics(): Promise<StaticticDto> {
     return this.playerStatsUseCase.getInstance().execute();
   }
+  @Post()
+  findAll(@Body() data: FindPlayersDto): Promise<PlayerDto[]> {
+    return this.playerListUseCase.getInstance().execute(data);
+  }
+
   @Get(':id')
   @ApiResponseType(PlayerDto, false)
   findOne(@Param('id') id: string): Promise<PlayerDto> {
